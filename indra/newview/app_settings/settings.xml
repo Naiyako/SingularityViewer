@@ -19076,6 +19076,72 @@ This should be as low as possible, but too low may break functionality</string>
       <key>Value</key>
       <integer>0</integer>
     </map>
+    <key>LostAttachmentsFix</key>
+    <map>
+      <key>Comment</key>
+      <string>Enables fix for attachments getting lost on teleports and region crossings.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>LostAttachmentsFixDelay</key>
+    <map>
+      <key>Comment</key>
+      <string>Delay in seconds after a teleport for that kill object messages to detach attachments are being ignored.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>F32</string>
+      <key>Value</key>
+      <real>3.0</real>
+    </map>
+    <key>LostAttachmentsFixReport</key>
+    <map>
+      <key>Comment</key>
+      <string>Reports attachments that were attempted to get detached while teleporting or region crossing to nearby chat.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
+    <key>AutorefreshAttachments</key>
+    <map>
+      <key>Comment</key>
+      <string>Enables a auto attachmentrefreshing after every teleport. Uses timeset of Vertexreset.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>VertexresetafterTeleport</key>
+    <map>
+      <key>Comment</key>
+      <string>Enables a auto Vertexreset after every teleport.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>VertexresetafterTeleportTimeset</key>
+    <map>
+      <key>Comment</key>
+      <string>Sets Auto VertexReset in seconds after a teleport.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>F32</string>
+      <key>Value</key>
+      <real>4.0</real>
+    </map>
   </map>
 </llsd>
 
