@@ -1,4 +1,4 @@
-/**
+	/**
  * @file llviewerobject.cpp
  * @brief Base class for viewer objects
  *
@@ -6753,6 +6753,17 @@ const LLUUID &LLViewerObject::extractAttachmentItemID()
 	}
 	setAttachmentItemID(item_id);
 	return getAttachmentItemID();
+}
+
+const std::string& LLViewerObject::getAttachmentItemName() const
+{
+
+	LLInventoryItem* item = gInventory.getItem(getAttachmentItemID());
+	if (isAttachment() && item)
+	{
+		return item->getName();
+	}
+	return LLStringUtil::null;
 }
 
 //virtual

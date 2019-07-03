@@ -1117,5 +1117,8 @@
 		<menu_item_call label="Rebake" mouse_opaque="true" name="Rebake" shortcut="control|alt|R">
 			<on_click function="Rebake"/>
 		</menu_item_call>
+    <menu_item_call label="Reset Attachments" mouse_opaque="true" name="Reset Attachments">
+      <on_click function="Avatar.ResetAttachments"/>
+    </menu_item_call>
 	</menu>
 </menu_bar>
