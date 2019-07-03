@@ -4910,6 +4910,10 @@ void process_crossed_region(LLMessageSystem* msg, void**)
 	}
 	LL_INFOS("Messaging") << "process_crossed_region()" << LL_ENDL;
 	gAgentAvatarp->resetRegionCrossingTimer();
+	//calling a Autorefreshment after the simcross
+	void AutorefreshAttachments();
+	AutorefreshAttachments();
+	//calling a Autorefreshment after the simcross	
 
 	U32 sim_ip;
 	msg->getIPAddrFast(_PREHASH_RegionData, _PREHASH_SimIP, sim_ip);
