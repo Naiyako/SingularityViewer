@@ -83,8 +83,8 @@ if(WINDOWS)
     endif(NOT DISABLE_TCMALLOC)
 
     if (FMODSTUDIO)
-        set(debug_files ${debug_files} fmodL.dll)
-        set(release_files ${release_files} fmod.dll)
+      set(debug_files ${debug_files} fmodL.dll)
+      set(release_files ${release_files} fmod.dll)
     endif (FMODSTUDIO)
 
 elseif(DARWIN)
