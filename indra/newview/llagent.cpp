@@ -4122,6 +4122,21 @@ void LLAgent::handleTeleportFinished()
 		mIsMaturityRatingChangingDuringTeleport = false;
 	}
 	//VertexresetafterTeleport and AutorefreshAttachmentsafterTeleport
+	void AutoVertexReset();
+	AutoVertexReset();
+	void AutorefreshAttachments();
+	AutorefreshAttachments();
+	//VertexresetafterTeleport and AutorefreshAttachmentsafterTeleport
+
+	// Init SLM Marketplace connection so we know which UI should be used for the user as a merchant
+	// Note: Eventually, all merchant will be migrated to the new SLM system and there will be no reason to show the old UI at all.
+	// Note: Some regions will not support the SLM cap for a while so we need to do that check for each teleport.
+	// *TODO : Suppress that line from here once the whole grid migrated to SLM and move it to idle_startup() (llstartup.cpp)
+	check_merchant_status();
+}
+//VertexresetafterTeleport and AutorefreshAttachmentsafterTeleport
+void AutoVertexReset()
+{
 	if (gSavedSettings.getBOOL("VertexresetafterTeleport"))
 	{
 		struct VertexResetTimer : public LLEventTimer
@@ -4137,6 +4152,9 @@ void LLAgent::handleTeleportFinished()
 		};
 		new VertexResetTimer();
 	}
+}
+void AutorefreshAttachments()
+{
 	if (gSavedSettings.getBOOL("AutorefreshAttachments"))
 	{
 		struct AutorefreshAttachments : public LLEventTimer
@@ -4152,15 +4170,9 @@ void LLAgent::handleTeleportFinished()
 		};
 		new AutorefreshAttachments();
 	}
-	//VertexresetafterTeleport and AutorefreshAttachmentsafterTeleport
-
-	// Init SLM Marketplace connection so we know which UI should be used for the user as a merchant
-	// Note: Eventually, all merchant will be migrated to the new SLM system and there will be no reason to show the old UI at all.
-	// Note: Some regions will not support the SLM cap for a while so we need to do that check for each teleport.
-	// *TODO : Suppress that line from here once the whole grid migrated to SLM and move it to idle_startup() (llstartup.cpp)
-	check_merchant_status();
 }
 
+//VertexresetafterTeleport and AutorefreshAttachmentsafterTeleport
 void LLAgent::handleTeleportFailed()
 {
 	if (mTeleportRequest != NULL)
