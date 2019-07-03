@@ -42,7 +42,8 @@
 #include <list>
 
 extern const S32Megabytes gMinVideoRam;
-extern const S32Megabytes gMaxVideoRam;
+//extern const S32Megabytes gMaxVideoRam;
+extern S32Megabytes gMaxVideoRam;
 
 
 class LLImageGL ;

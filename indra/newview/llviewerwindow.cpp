@@ -1803,6 +1803,12 @@ LLViewerWindow::LLViewerWindow(
 		LLFeatureManager::getInstance()->setGraphicsLevel(0, false);
 		gSavedSettings.setU32("RenderQualityPerformance", 0);		
 	}
+	//Detect how much Vram we have and increasing max video ram for textures to what we have -1024mb for safety.
+	if (gGLManager.mVRAM > 1536)
+	{
+		gMaxVideoRam = S32Megabytes(gGLManager.mVRAM - 1024);
+		LL_INFOS() << gGLManager.mVRAM << " MB video memory detected - increasing max video ram for textures to " << gMaxVideoRam << " MB" << LL_ENDL;
+	}
 		
 	// Init the image list.  Must happen after GL is initialized and before the images that
 	// LLViewerWindow needs are requested.
