@@ -32,7 +32,7 @@
 #include "llstl.h"
 #include "llindexedvector.h"
 
-#include <unordered_map>
+#include <map>
 
 extern U32 sMsgDataAllocSize;
 extern U32 sMsgdataAllocCount;
