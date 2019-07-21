@@ -306,7 +306,9 @@ void LLFloaterRegionInfo::requestRegionInfo()
 	tab->getChild<LLPanel>("Debug")->setCtrlsEnabled(FALSE);
 	tab->getChild<LLPanel>("Terrain")->setCtrlsEnabled(FALSE);
 	tab->getChild<LLPanel>("Estate")->setCtrlsEnabled(FALSE);
-	tab->getChild<LLPanel>("Access")->setCtrlsEnabled(FALSE);
+	auto panel = tab->getChild<LLPanel>("Access");
+	panel->setCtrlsEnabled(FALSE);
+	panel->getChildView("tabs")->setEnabled(true);
 
 	// Must allow anyone to request the RegionInfo data
 	// so non-owners/non-gods can see the values. 
@@ -1755,14 +1757,10 @@ BOOL LLPanelEstateInfo::postBuild()
 	initCtrl("limit_payment");
 	initCtrl("limit_age_verified");
 	initCtrl("voice_chat_check");
-	initHelpBtn("estate_manager_help",			"HelpEstateEstateManager");
 	initHelpBtn("use_global_time_help",			"HelpEstateUseGlobalTime");
 	initHelpBtn("fixed_sun_help",				"HelpEstateFixedSun");
 	initHelpBtn("externally_visible_help",		"HelpEstateExternallyVisible");
 	initHelpBtn("allow_direct_teleport_help",	"HelpEstateAllowDirectTeleport");
-	initHelpBtn("allow_resident_help",			"HelpEstateAllowResident");
-	initHelpBtn("allow_group_help",				"HelpEstateAllowGroup");
-	initHelpBtn("ban_resident_help",			"HelpEstateBanResident");
 	initHelpBtn("voice_chat_help",                  "HelpEstateVoiceChat");
 
 	// Set up the Legacy Estate Environment checkboxes
@@ -2449,11 +2447,14 @@ bool LLDispatchSetEstateAccess::operator()(
 		}
 	}
 
-	if (panel && panel->getPendingUpdate())
+	if (panel)
 	{
-		panel->setPendingUpdate(false);
 		panel->onEstateAccessReceived(result); // Until HTTP response use UDP Result
-		panel->updateLists();
+		if (panel->getPendingUpdate())
+		{
+			panel->setPendingUpdate(false);
+			panel->updateLists();
+		}
 	}
 	return true;
 }
@@ -3331,6 +3332,12 @@ LLPanelEstateAccess::LLPanelEstateAccess()
 
 BOOL LLPanelEstateAccess::postBuild()
 {
+	// set up the callbacks for the generic controls
+	initHelpBtn("estate_manager_help", "HelpEstateEstateManager");
+	initHelpBtn("allow_resident_help", "HelpEstateAllowResident");
+	initHelpBtn("allow_group_help", "HelpEstateAllowGroup");
+	initHelpBtn("ban_resident_help", "HelpEstateBanResident");
+
 	getChild<LLUICtrl>("allowed_avatar_name_list")->setCommitCallback(boost::bind(&LLPanelEstateInfo::onChangeChildCtrl, this, _1));
 	LLNameListCtrl *avatar_name_list = getChild<LLNameListCtrl>("allowed_avatar_name_list");
 	if (avatar_name_list)
@@ -4139,6 +4146,7 @@ void LLPanelEstateAccess::onEstateAccessReceived(const LLSD& result)
 
 		banned_agent_name_list->clearSortOrder();
 		banned_agent_name_list->deleteAllItems();
+		static const auto na = LLTrans::getString("na");
 		for (LLSD::array_const_iterator it = result["BannedAgents"].beginArray(); it != result["BannedAgents"].endArray(); ++it)
 		{
 			LLSD item;
@@ -4152,14 +4160,14 @@ void LLPanelEstateAccess::onEstateAccessReceived(const LLSD& result)
 
 			std::string ban_date = (*it)["ban_date"].asString();
 			columns[2]["column"] = "ban_date";
-			columns[2]["value"] = ban_date[0] != '0' ? ban_date.substr(0, 16) : LLTrans::getString("na"); // server returns the "0000-00-00 00:00:00" date in case it doesn't know it
+			columns[2]["value"] = ban_date[0] != '0' ? ban_date.substr(0, 16) : na; // server returns the "0000-00-00 00:00:00" date in case it doesn't know it
 
 			columns[3]["column"] = "bannedby";
 			LLUUID banning_id = (*it)["banning_id"].asUUID();
 			LLAvatarName av_name;
 			if (banning_id.isNull())
 			{
-				columns[3]["value"] = LLTrans::getString("na");
+				columns[3]["value"] = na;
 			}
 			else if (LLAvatarNameCache::get(banning_id, &av_name))
 			{
@@ -4243,16 +4251,7 @@ void LLPanelEstateAccess::onBannedSearchEdit(const std::string& search_string)
 void LLPanelEstateAccess::searchAgent(LLNameListCtrl* listCtrl, const std::string& search_string)
 {
 	if (!listCtrl) return;
-
-	if (!search_string.empty())
-	{
-		listCtrl->setSearchColumn(0); // name column
-		listCtrl->selectItemByPrefix(search_string, FALSE);
-	}
-	else
-	{
-		listCtrl->deselectAllItems(TRUE);
-	}
+	listCtrl->setFilter(search_string);
 }
 
 void LLPanelEstateAccess::copyListToClipboard(std::string list_name)
