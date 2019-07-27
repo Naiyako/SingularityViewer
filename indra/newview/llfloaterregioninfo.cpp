@@ -4065,6 +4065,20 @@ void LLPanelEstateAccess::sendEstateAccessDelta(U32 flags, const LLUUID& agent_o
 	msg->nextBlock("ParamList");
 	msg->addString("Parameter", buf);
 
+
+	if (flags & (ESTATE_ACCESS_ALLOWED_AGENT_ADD | ESTATE_ACCESS_ALLOWED_AGENT_REMOVE |
+		         ESTATE_ACCESS_BANNED_AGENT_ADD | ESTATE_ACCESS_BANNED_AGENT_REMOVE))
+	{
+		if (auto panel = LLFloaterRegionInfo::getPanelAccess())
+		{
+			// Clear these out before we ask for an update
+			if (auto name_list = panel->getChild<LLNameListCtrl>("allowed_avatar_name_list"))
+				name_list->deleteAllItems();
+			if (auto name_list = panel->getChild<LLNameListCtrl>("banned_avatar_name_list"))
+				name_list->deleteAllItems();
+		}
+	}
+
 	gAgent.sendReliableMessage();
 }
 
@@ -4286,6 +4300,12 @@ void LLPanelEstateAccess::copyListToClipboard(std::string list_name)
 
 bool LLPanelEstateAccess::refreshFromRegion(LLViewerRegion* region)
 {
+	// Clear these out before we ask for an update
+	if (auto name_list = getChild<LLNameListCtrl>("allowed_avatar_name_list"))
+		name_list->deleteAllItems();
+	if (auto name_list = getChild<LLNameListCtrl>("banned_avatar_name_list"))
+		name_list->deleteAllItems();
+
 	updateLists();
 	return LLPanelRegionInfo::refreshFromRegion(region);
 }
