@@ -1426,9 +1426,6 @@ void LLScrollListCtrl::drawItems()
 	S32 x = mItemListRect.mLeft;
 	S32 y = mItemListRect.mTop - mLineHeight;
 
-	// allow for partial line at bottom
-	S32 num_page_lines = getLinesPerPage();
-
 	LLRect item_rect;
 
 	LLGLSUIDefault gls_ui;
@@ -1453,6 +1450,9 @@ void LLScrollListCtrl::drawItems()
 			return;
 		}
 		S32 list_size = mItemList.size() - 1;
+
+		// allow for partial line at bottom
+		S32 num_page_lines = mFilter.empty() ? getLinesPerPage() : mScrollbar->getDocSize() + 1;
 		S32 last_line = llmin(list_size, mScrollLines + num_page_lines);
 
 		S32 max_columns = 0;
@@ -1829,17 +1829,19 @@ BOOL LLScrollListCtrl::handleDoubleClick(S32 x, S32 y, MASK mask)
 	{
 		// Offer the click to the children, even if we aren't enabled
 		// so the scroll bars will work.
-		if (NULL == LLView::childrenHandleDoubleClick(x, y, mask))
+		handled = LLView::childrenHandleDoubleClick(x, y, mask) != nullptr;
+		if (!handled)
 		{
 			// Run the callback only if an item is being double-clicked.
-			if( mCanSelect && hitItem(x, y) && mOnDoubleClickCallback )
+			if (mCanSelect && mOnDoubleClickCallback && hitItem(x, y))
 			{
 				mOnDoubleClickCallback();
+				handled = true;
 			}
 		}
 	}
 
-	return TRUE;
+	return handled;
 }
 
 BOOL LLScrollListCtrl::handleClick(S32 x, S32 y, MASK mask)
@@ -1912,14 +1914,16 @@ LLScrollListItem* LLScrollListCtrl::hitItem( S32 x, S32 y )
 
 	// allow for partial line at bottom
 	S32 num_page_lines = getLinesPerPage();
+	S32 list_size = mItemList.size() - 1;
+	S32 last_line = llmin(list_size, mScrollLines + num_page_lines);
 
-	S32 line = 0;
-	for(LLScrollListItem* item : mItemList)
+	for (S32 index = mScrollLines, line = mScrollLines; index <= list_size; ++index)
 	{
+		LLScrollListItem* item = mItemList[index];
 		if (item->getFiltered()) continue;
-		if( mScrollLines <= line && line < mScrollLines + num_page_lines )
+
 		{
-			if( item->getEnabled() && item_rect.pointInRect( x, y ) )
+			if (item->getEnabled() && item_rect.pointInRect( x, y ))
 			{
 				hit_item = item;
 				break;
@@ -1927,7 +1931,7 @@ LLScrollListItem* LLScrollListCtrl::hitItem( S32 x, S32 y )
 
 			item_rect.translate(0, -mLineHeight);
 		}
-		++line;
+		if (++line > last_line) break; // Don't try to hit any undrawn items
 	}
 
 	return hit_item;
@@ -2441,8 +2445,7 @@ S32	LLScrollListCtrl::getLinesPerPage()
 	}
 	else
 	{
-		return mLineHeight ? mItemListRect.getHeight() / mLineHeight :
-			mFilter.empty() ? getItemCount() : mScrollbar->getDocSize();
+		return mLineHeight ? mItemListRect.getHeight() / mLineHeight : getItemCount();
 	}
 }
 
