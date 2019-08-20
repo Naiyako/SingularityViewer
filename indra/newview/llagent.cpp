@@ -4132,6 +4132,38 @@ void LLAgent::handleTeleportFinished()
         {
             mRegionp->setCapabilitiesReceivedCallback(boost::bind(&LLAgent::onCapabilitiesReceivedAfterTeleport));
         }
+		//VertexresetafterTeleport and AutorefreshAttachmentsafterTeleport
+		if (gSavedSettings.getBOOL("VertexresetafterTeleport"))
+		{
+			struct VertexResetTimer : public LLEventTimer
+			{
+				VertexResetTimer() : LLEventTimer(gSavedSettings.getF32("VertexresetafterTeleportTimeset")) {}
+
+				BOOL tick() override
+				{
+					void reset_vertex_buffers(void* user_data);
+					reset_vertex_buffers(nullptr);
+					return true;
+				}
+			};
+			new VertexResetTimer();
+		}
+		if (gSavedSettings.getBOOL("AutorefreshAttachments"))
+		{
+			struct AutorefreshAttachments : public LLEventTimer
+			{
+				AutorefreshAttachments() : LLEventTimer(gSavedSettings.getF32("VertexresetafterTeleportTimeset")) {}
+
+				BOOL tick() override
+				{
+					void handle_refresh_attachments();
+					handle_refresh_attachments();
+					return true;
+				}
+			};
+			new AutorefreshAttachments();
+		}
+		//VertexresetafterTeleport and AutorefreshAttachmentsafterTeleport
     }
 }
 

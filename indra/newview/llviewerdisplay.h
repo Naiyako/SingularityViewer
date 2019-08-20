@@ -48,5 +48,6 @@ extern BOOL			gForceRenderLandFence;
 extern BOOL gResizeScreenTexture;
 extern BOOL gWindowResized;
 extern F32  gSavedDrawDistance;
+extern LLFrameTimer gTeleportDelayDelayTimer;  //lostattachmentfix
 
 #endif // LL_LLVIEWERDISPLAY_H

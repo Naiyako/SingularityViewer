@@ -6075,6 +6075,16 @@ class LLAvatarAddFriend : public view_listener_t
 	}
 };
 
+class LLAvatarResetAttachments : public view_listener_t
+{
+	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
+	{
+		void handle_refresh_attachments();
+		handle_refresh_attachments();
+		return true;
+	}
+};
+
 class LLAvatarResetSkeleton: public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
@@ -9579,6 +9589,9 @@ void initialize_menus()
 	addMenu(new LLAvatarResetSkeleton(), "Avatar.ResetSkeleton");
 	addMenu(new LLAvatarEnableResetSkeleton(), "Avatar.EnableResetSkeleton");
 	addMenu(new LLAvatarResetSkeletonAndAnimations(), "Avatar.ResetSkeletonAndAnimations");
+	//AppearancePhantomAttachPatch
+	addMenu(new LLAvatarResetAttachments(), "Avatar.ResetAttachments");
+	//AppearancePhantomAttachPatch
 	addMenu(new LLAvatarEnableAddFriend(), "Avatar.EnableAddFriend");
 	addMenu(new LLAvatarEnableFreezeEject(), "Avatar.EnableFreezeEject");
 	addMenu(new LLAvatarCopyUUID(), "Avatar.CopyUUID");
@@ -9684,6 +9697,9 @@ void initialize_menus()
 	addMenu(new SinguVisibleDebugConsole(), "VisibleRegionDebugConsole");
 	addMenu(new SinguUrlAction(), "URLAction");
 	addMenu(new LLSyncAnimations(), "Tools.ResyncAnimations");
+	//AppearancePhantomAttachPatch
+	addMenu(new LLAvatarResetAttachments(), "Avatar.ResetAttachments");
+	//AppearancePhantomAttachPatch
 
 	addMenu(new ShowInvFloaterID, "ShowInvFloater.ID");
 	addMenu(new ShowInvFloaterName, "ShowInvFloater.Name");

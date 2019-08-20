@@ -103,6 +103,7 @@ const F32 TELEPORT_LOCAL_DELAY = 1.0f; // Delay to prevent teleports after start
 BOOL		 gTeleportDisplay = FALSE;
 LLFrameTimer gTeleportDisplayTimer;
 LLFrameTimer gTeleportArrivalTimer;
+LLFrameTimer gTeleportDelayDelayTimer; //lostattachmentfix
 F32			 gSavedDrawDistance = 0.0f;
 const F32		RESTORE_GL_TIME = 5.f;	// Wait this long while reloading textures before we raise the curtain
 
@@ -517,6 +518,7 @@ void display(BOOL rebuild, F32 zoom_factor, int subfield, BOOL for_snapshot, boo
 			gTextureList.mForceResetTextureStats = TRUE;
 			if(!hide_tp_screen)
 				gAgentCamera.resetView(TRUE, TRUE);
+				gTeleportDelayDelayTimer.reset(); //Attachmentlostfix
 
 			break;
 

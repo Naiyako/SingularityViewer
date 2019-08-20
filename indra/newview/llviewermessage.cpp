@@ -5095,8 +5095,6 @@ void process_kill_object(LLMessageSystem *mesgsys, void **user_data)
 		regionp = LLWorld::getInstance()->getRegion(host);
 	}
 
-	bool different_region = mesgsys->getSender().getIPandPort() != gAgent.getRegion()->getHost().getIPandPort();
-
 	S32 num_objects = mesgsys->getNumberOfBlocksFast(_PREHASH_ObjectData);
 	for (S32 i = 0; i < num_objects; ++i)
 	{
@@ -5121,11 +5119,40 @@ void process_kill_object(LLMessageSystem *mesgsys, void **user_data)
 		LLViewerObject *objectp = gObjectList.findObject(id);
 		if (objectp)
 		{
-			if (different_region && gAgentAvatarp == objectp->getAvatar())
+			//lostattachmentfix
+			static LLCachedControl<bool> LostAttachmentsFix(gSavedSettings, "LostAttachmentsFix");
+			static LLCachedControl<F32> LostAttachmentsFixDelay(gSavedSettings, "LostAttachmentsFixDelay");
+			void cmdline_printchat(const std::string & message);
+			LLViewerRegion* regionhost = LLWorld::getInstance()->getRegion(mesgsys->getSender());
+			bool different_region = mesgsys->getSender().getIPandPort() != gAgent.getRegion()->getHost().getIPandPort();
+			bool Delaytimer = gTeleportDelayDelayTimer.getElapsedTimeF32() <= LostAttachmentsFixDelay;
+			bool attachments = objectp->isAttachment() || objectp->isTempAttachment() && objectp->permYouOwner();
+
+			if (LostAttachmentsFix && isAgentAvatarValid() && (gAgent.getTeleportState() != LLAgent::TELEPORT_NONE || Delaytimer || different_region && gAgentAvatarp == objectp->getAvatar()) && attachments)
 			{
-				LL_WARNS() << "Region other than our own killing our attachments!!" << LL_ENDL;
-				continue;
+				if (gSavedSettings.getBOOL("LostAttachmentsFixReport"))
+				{
+					std::string reason;
+					if (gAgent.getTeleportState() != LLAgent::TELEPORT_NONE)
+					{
+						reason = "teleport";
+						//LL_WARNS() << "Region other than our own killing our attachments!!" << LL_ENDL;
+					}
+					else if (Delaytimer)
+					{
+						reason = "timer";
+						//LL_WARNS() << "Timer is killing our attachments!!" << LL_ENDL;+                                               
+					}
+					else
+					{
+						reason = "crossing";
+						//LL_WARNS() << "Timer is killing our attachments!!" << LL_ENDL;+                                               }
+						cmdline_printchat("Region: " + regionhost->getName() + " tryed to kill our attachment: " + objectp->getAttachmentItemName() + " (" + reason + ") - Killmessage received at region: \"" + gAgent.getRegion()->getName() + "\"");
+					}
+					continue;
+				}
 			}
+			//lostattachmentfix
 
 			// Display green bubble on kill
 			if ( gShowObjectUpdates )

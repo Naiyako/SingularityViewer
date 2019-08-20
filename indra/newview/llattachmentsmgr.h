@@ -88,7 +88,9 @@ public:
 	static void onIdle(void *);
 
     void onAttachmentArrived(const LLUUID& inv_item_id);
-
+	//MK from KB
+	void refreshAttachments();
+	//mk from kb
     void onDetachRequested(const LLUUID& inv_item_id);
     void onDetachCompleted(const LLUUID& inv_item_id);
 
