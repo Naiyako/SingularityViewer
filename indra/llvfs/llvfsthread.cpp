@@ -7,7 +7,7 @@
  * $LicenseInfo:firstyear=2001&license=viewerlgpl$
  * Second Life Viewer Source Code
  * Copyright (C) 2010, Linden Research, Inc.
- * 
+ * LLVFSThread::read
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation;
@@ -79,7 +79,7 @@ LLVFSThread::~LLVFSThread()
 //----------------------------------------------------------------------------
 
 LLVFSThread::handle_t LLVFSThread::read(LLVFS* vfs, const LLUUID &file_id, const LLAssetType::EType file_type,
-										U8* buffer, S32 offset, S32 numbytes, U32 priority, U32 flags)
+										U8* buffer, S64 offset, S64 numbytes, U32 priority, U32 flags)
 {
 	handle_t handle = generateHandle();
 
@@ -98,31 +98,23 @@ LLVFSThread::handle_t LLVFSThread::read(LLVFS* vfs, const LLUUID &file_id, const
 	return handle;
 }
 
-S32 LLVFSThread::readImmediate(LLVFS* vfs, const LLUUID &file_id, const LLAssetType::EType file_type,
-							   U8* buffer, S32 offset, S32 numbytes)
+S64 LLVFSThread::readImmediate(LLVFS* vfs, const LLUUID &file_id, const LLAssetType::EType file_type,
+							   U8* buffer, S64 offset, S64 numbytes)
 {
-	handle_t handle = generateHandle();
-
-	Request* req = new Request(handle, PRIORITY_IMMEDIATE, 0, FILE_READ, vfs, file_id, file_type,
-							   buffer, offset, numbytes);
-	
-	S32 res = addRequest(req) ? 1 : 0;
-	if (res == 0)
-	{
-		LL_ERRS() << "LLVFSThread::read called after LLVFSThread::cleanupClass()" << LL_ENDL;
-		req->deleteRequest();
-	}
-	else
+	S64 res(0);
+	if (handle_t handle = read(vfs, file_id, file_type, buffer, offset, numbytes, PRIORITY_IMMEDIATE, 0))
 	{
 		llverify(waitForResult(handle, false) == true);
-		res = req->getBytesRead();
+		Request* req = (Request*)getRequest(handle);
+		if (req)
+			res = req->getBytesRead();
 		completeRequest(handle);
 	}
 	return res;
 }
 
 LLVFSThread::handle_t LLVFSThread::write(LLVFS* vfs, const LLUUID &file_id, const LLAssetType::EType file_type,
-										 U8* buffer, S32 offset, S32 numbytes, U32 flags)
+										 U8* buffer, S64 offset, S64 numbytes, U32 flags)
 {
 	handle_t handle = generateHandle();
 
@@ -140,24 +132,16 @@ LLVFSThread::handle_t LLVFSThread::write(LLVFS* vfs, const LLUUID &file_id, cons
 	return handle;
 }
 
-S32 LLVFSThread::writeImmediate(LLVFS* vfs, const LLUUID &file_id, const LLAssetType::EType file_type,
-								 U8* buffer, S32 offset, S32 numbytes)
+S64 LLVFSThread::writeImmediate(LLVFS* vfs, const LLUUID &file_id, const LLAssetType::EType file_type,
+								 U8* buffer, S64 offset, S64 numbytes)
 {
-	handle_t handle = generateHandle();
-
-	Request* req = new Request(handle, PRIORITY_IMMEDIATE, 0, FILE_WRITE, vfs, file_id, file_type,
-							   buffer, offset, numbytes);
-
-	S32 res = addRequest(req) ? 1 : 0;
-	if (res == 0)
-	{
-		LL_ERRS() << "LLVFSThread::read called after LLVFSThread::cleanupClass()" << LL_ENDL;
-		req->deleteRequest();
-	}
-	else
+	S64 res(0);
+	if (handle_t handle = write(vfs, file_id, file_type, buffer, offset, numbytes, 0))
 	{
 		llverify(waitForResult(handle, false) == true);
-		res = req->getBytesRead();
+		Request* req = (Request*)getRequest(handle);
+		if (req)
+			res = req->getBytesRead();
 		completeRequest(handle);
 	}
 	return res;
@@ -190,7 +174,7 @@ S32 LLVFSThread::writeImmediate(LLVFS* vfs, const LLUUID &file_id, const LLAsset
 LLVFSThread::Request::Request(handle_t handle, U32 priority, U32 flags,
 							  operation_t op, LLVFS* vfs,
 							  const LLUUID &file_id, const LLAssetType::EType file_type,
-							  U8* buffer, S32 offset, S32 numbytes) :
+							  U8* buffer, S64 offset, S64 numbytes) :
 	QueuedRequest(handle, priority, flags),
 	mOperation(op),
 	mVFS(vfs),
@@ -212,7 +196,7 @@ LLVFSThread::Request::Request(handle_t handle, U32 priority, U32 flags,
 	}
 	if (mOperation == FILE_WRITE)
 	{
-		S32 blocksize =  mVFS->getMaxSize(mFileID, mFileType);
+		S64 blocksize =  mVFS->getMaxSize(mFileID, mFileType);
 		if (blocksize < 0)
 		{
 			LL_WARNS() << "VFS write to temporary block (shouldn't happen)" << LL_ENDL;

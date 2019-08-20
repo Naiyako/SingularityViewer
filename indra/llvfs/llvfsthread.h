@@ -55,9 +55,9 @@ public:
 		Request(handle_t handle, U32 priority, U32 flags,
 				operation_t op, LLVFS* vfs,
 				const LLUUID &file_id, const LLAssetType::EType file_type,
-				U8* buffer, S32 offset, S32 numbytes);
+				U8* buffer, S64 offset, S64 numbytes);
 
-		S32 getBytesRead()
+		S64 getBytesRead()
 		{
 			return mBytesRead;
 		}
@@ -108,17 +108,17 @@ public:
 
 	// Return a Request handle
 	handle_t read(LLVFS* vfs, const LLUUID &file_id, const LLAssetType::EType file_type,	/* Flawfinder: ignore */
-				  U8* buffer, S32 offset, S32 numbytes, U32 pri=PRIORITY_NORMAL, U32 flags = 0);
+				  U8* buffer, S64 offset, S64 numbytes, U32 pri=PRIORITY_NORMAL, U32 flags = 0);
 	handle_t write(LLVFS* vfs, const LLUUID &file_id, const LLAssetType::EType file_type,
-				   U8* buffer, S32 offset, S32 numbytes, U32 flags);
+				   U8* buffer, S64 offset, S64 numbytes, U32 flags);
 	// SJB: rename seems to have issues, especially when threaded
 // 	handle_t rename(LLVFS* vfs, const LLUUID &file_id, const LLAssetType::EType file_type,
 // 					const LLUUID &new_id, const LLAssetType::EType new_type, U32 flags);
 	// Return number of bytes read
-	S32 readImmediate(LLVFS* vfs, const LLUUID &file_id, const LLAssetType::EType file_type,
-					  U8* buffer, S32 offset, S32 numbytes);
-	S32 writeImmediate(LLVFS* vfs, const LLUUID &file_id, const LLAssetType::EType file_type,
-					   U8* buffer, S32 offset, S32 numbytes);
+	S64 readImmediate(LLVFS* vfs, const LLUUID &file_id, const LLAssetType::EType file_type,
+					  U8* buffer, S64 offset, S64 numbytes);
+	S64 writeImmediate(LLVFS* vfs, const LLUUID &file_id, const LLAssetType::EType file_type,
+					   U8* buffer, S64 offset, S64 numbytes);
 
 public:
 	static void initClass(bool local_is_threaded = TRUE); // Setup sLocal

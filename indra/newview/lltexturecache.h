@@ -134,7 +134,7 @@ public:
 	S64Bytes getUsage() { return S64Bytes(mTexturesSizeTotal); }
 	S64Bytes getMaxUsage() { return S64Bytes(sCacheMaxTexturesSize); }
 	U32 getEntries() { return mHeaderEntriesInfo.mEntries; }
-	U32 getMaxEntries() { return sCacheMaxEntries; };
+	U64 getMaxEntries() { return sCacheMaxEntries; };
 	BOOL isInCache(const LLUUID& id) ;
 	BOOL isInLocal(const LLUUID& id) ;
 
@@ -221,7 +221,7 @@ private:
 
 	// Statics
 	static F32 sHeaderCacheVersion;
-	static U32 sCacheMaxEntries;
+	static U64 sCacheMaxEntries;
 	static S64 sCacheMaxTexturesSize;
 };
 

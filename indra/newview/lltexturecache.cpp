@@ -960,7 +960,7 @@ BOOL LLTextureCache::isInLocal(const LLUUID& id)
 
 //static
 F32 LLTextureCache::sHeaderCacheVersion = 1.71f;
-U32 LLTextureCache::sCacheMaxEntries = 1024 * 1024; //~1 million textures.
+U64 LLTextureCache::sCacheMaxEntries = 2048 * 2048; //~1 million textures.
 S64 LLTextureCache::sCacheMaxTexturesSize = 0; // no limit
 const char* entries_filename = "texture.entries";
 const char* cache_filename = "texture.cache";
