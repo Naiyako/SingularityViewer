@@ -82,7 +82,7 @@
 	<check_box label="Favoritos" name="favs_btn"/>
 	<check_box label="Ítems Recibidos" name="received_items_btn"/>
 	<check_box label="Artículos del Mercado" name="marketplace_listings_btn"/>
-	<check_box label="Mercado en Línea" name="marketplace_btn"/>
+	<check_box label="Mercado" name="marketplace_btn"/>
 	<check_box label="Preferencias" name="preferences_btn"/>
 	<check_box label="Configuración Joystick" name="joystick_btn"/>
 	<check_box label="Reemplazo Automático" name="auto_replace_btn"/>
@@ -93,7 +93,7 @@
 	<check_box label="Denunciar Abuso" name="abuse_btn"/>
 	<!-- Singu TODO: Re-implement f1 help.
 	<check_box label="Ayuda" name="help_btn"/>
-	-->
+  -->
 	<check_box label="Tutorial" name="tutorial_btn"/>
 	<check_box label="Acerca de [SHORT_APP_NAME]" name="about_btn"/>
 	<check_box label="Salir" name="quit_btn"/>
