@@ -1100,11 +1100,11 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>2cf52c44f8943f69b91c950ae7ea356a</string>
+              <string>5e55ee665d471cf676c2098218229af5</string>
               <key>hash_algorithm</key>
               <string>md5</string>
               <key>url</key>
-              <string>file:///c:/cygwin/opt/firestorm/fmodstudio-2.00.05-windows64-192861136.tar.bz2</string>
+              <string>http://repo.meow-viewer.uk.to/private/fmodstudio-2.00.06-windows64-193621633.tar.bz2</string>
             </map>
             <key>name</key>
             <string>windows64</string>
@@ -2098,9 +2098,9 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>a86b3a2fba5d62c42c26fd17ef7804d6</string>
+              <string>a369edcd42d975b49328df1163c2eee7</string>
               <key>url</key>
-              <string>file:///c:/cygwin/opt/firestorm/kdu-7.A.7-windows-191472028.tar.bz2</string>
+              <string>http://repo.meow-viewer.uk.to/private/kdu-7.A.6-windows-183521837.tar.bz2</string>
             </map>
             <key>name</key>
             <string>windows64</string>
