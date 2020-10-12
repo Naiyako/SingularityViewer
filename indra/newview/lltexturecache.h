@@ -209,7 +209,7 @@ private:
 
 	// Statics
 	static F32 sHeaderCacheVersion;
-	static U32 sCacheMaxEntries;
+	static U64 sCacheMaxEntries;
 	static S64 sCacheMaxTexturesSize;
 };
 

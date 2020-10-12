@@ -874,9 +874,8 @@ BOOL LLTextureCache::isInLocal(const LLUUID& id)
 //////////////////////////////////////////////////////////////////////////////
 
 //static
-const S32 MAX_REASONABLE_FILE_SIZE = 512*1024*1024; // 512 MB
 F32 LLTextureCache::sHeaderCacheVersion = 1.8f;
-U32 LLTextureCache::sCacheMaxEntries = MAX_REASONABLE_FILE_SIZE / TEXTURE_CACHE_ENTRY_SIZE;
+U64 LLTextureCache::sCacheMaxEntries = 2048*2048; // ~4 million textures.
 S64 LLTextureCache::sCacheMaxTexturesSize = 0; // no limit
 const char* entries_filename = "texture.entries";
 const char* cache_filename = "texture.cache";
@@ -936,7 +935,7 @@ U64 LLTextureCache::initCache(ELLPath location, U64 max_size, BOOL texture_cache
 	llassert_always(getPending() == 0); //should not start accessing the texture cache before initialized.
 	
 	U64 header_size = (max_size * 2) / 10;
-	U32 max_entries = header_size / TEXTURE_CACHE_ENTRY_SIZE;
+	U64 max_entries = header_size / TEXTURE_CACHE_ENTRY_SIZE;
 	sCacheMaxEntries = (llmin(sCacheMaxEntries, max_entries));
 	header_size = sCacheMaxEntries * TEXTURE_CACHE_ENTRY_SIZE;
 	max_size -= header_size;
