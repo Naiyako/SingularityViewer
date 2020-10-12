@@ -26,6 +26,10 @@
 
 #include "llviewerprecompiledheaders.h"
 
+// [SL:KB] - Patch: Appearance-PhantomAttach | Checked: Catznip-5.0
+#include "llagent.h"
+// [/SL:KB]
+
 #include "llviewerjointattachment.h"
 
 #include "llagentconstants.h"
@@ -184,15 +188,20 @@ BOOL LLViewerJointAttachment::addObject(LLViewerObject* object)
 // [/SL:KB]
 	// Two instances of the same inventory item attached --
 	// Request detach, and kill the object in the meantime.
-	if (getAttachedObject(object->getAttachmentItemID()))
+	if (LLViewerObject* pAttachObj = getAttachedObject(object->getAttachmentItemID()))
 	{
 		LL_INFOS() << "(same object re-attached)" << LL_ENDL;
-		LL_INFOS("Attachment") << object->getID() << " ("<<object->getAttachmentPointName()<<") ITEM re-attached" << LL_ENDL;
-		object->markDead();
-
-		// If this happens to be attached to self, then detach.
-		LLVOAvatarSelf::detachAttachmentIntoInventory(object->getAttachmentItemID());
-		return FALSE;
+		pAttachObj->markDead();
+		if (pAttachObj->permYouOwner())
+		{
+			gMessageSystem->newMessage("ObjectDetach");
+			gMessageSystem->nextBlockFast(_PREHASH_AgentData);
+			gMessageSystem->addUUIDFast(_PREHASH_AgentID, gAgent.getID());
+			gMessageSystem->addUUIDFast(_PREHASH_SessionID, gAgent.getSessionID());
+			gMessageSystem->nextBlockFast(_PREHASH_ObjectData);
+			gMessageSystem->addU32Fast(_PREHASH_ObjectLocalID, pAttachObj->getLocalID());
+			gMessageSystem->sendReliable(gAgent.getRegionHost());
+		}
 	}
 
 	mAttachedObjects.push_back(object);
@@ -481,7 +490,10 @@ LLViewerObject *LLViewerJointAttachment::getAttachedObject(const LLUUID &object_
 		 ++iter)
 	{
 		LLViewerObject* attached_object = (*iter);
-		if (attached_object->getAttachmentItemID() == object_id)
+		//if (attached_object->getAttachmentItemID() == object_id)
+		//[SL:KB] - Patch: Appearance - PhantomAttach | Checked : Catznip - 5.0
+		if ((attached_object->getAttachmentItemID() == object_id) && (!attached_object->isDead()))
+		// [/SL:KB]
 		{
 			return attached_object;
 		}

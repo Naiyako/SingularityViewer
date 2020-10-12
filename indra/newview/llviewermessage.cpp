@@ -3255,7 +3255,7 @@ void process_crossed_region(LLMessageSystem* msg, void**)
 	}
 	LL_INFOS("Messaging") << "process_crossed_region()" << LL_ENDL;
 	gAgentAvatarp->resetRegionCrossingTimer();
-	gAgent.setIsCrossingRegion(false); // Attachments getting lost on TP, region crossing hook
+	gAgent.setIsCrossingRegion(false); //Attachments getting lost on TP, region crossing hook
 
 
 	U32 sim_ip;
@@ -3738,15 +3738,10 @@ void process_kill_object(LLMessageSystem* mesgsys, void** user_data)
 {
 	LL_RECORD_BLOCK_TIME(FTM_PROCESS_OBJECTS);
 
-	auto agent_region = gAgent.getRegion();
-	if (!agent_region) return;
-
 	LLUUID		id;
 
 	U32 ip = mesgsys->getSenderIP();
 	U32 port = mesgsys->getSenderPort();
-
-	bool different_region = mesgsys->getSender().getIPandPort() != agent_region->getHost().getIPandPort();
 
 	S32 num_objects = mesgsys->getNumberOfBlocksFast(_PREHASH_ObjectData);
 	for (S32 i = 0; i < num_objects; ++i)

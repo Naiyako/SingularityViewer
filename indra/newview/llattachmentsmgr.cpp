@@ -42,7 +42,8 @@
 #include <boost/algorithm/string/predicate.hpp>
 
 const F32 COF_LINK_BATCH_TIME = 5.0F;
-const F32 MAX_ATTACHMENT_REQUEST_LIFETIME = 30.0F;
+//const F32 MAX_ATTACHMENT_REQUEST_LIFETIME = 30.0F;
+const F32 MAX_ATTACHMENT_REQUEST_LIFETIME = 60.0F;
 const F32 MIN_RETRY_REQUEST_TIME = 5.0F;
 const F32 MAX_BAD_COF_TIME = 30.0F;
 
@@ -642,4 +643,32 @@ void LLAttachmentsMgr::spamStatusInfo()
         }
     }
 #endif
+}
+//to call a refresh
+void handle_refresh_attachments()
+{
+    LLAttachmentsMgr::instance().refreshAttachments();
+}
+//MK from KB
+void LLAttachmentsMgr::refreshAttachments()
+{
+    if (!isAgentAvatarValid())
+        return;
+
+    for (const auto& kvpAttachPt : gAgentAvatarp->mAttachmentPoints)
+    {
+        for (const LLViewerObject* pAttachObj : kvpAttachPt.second->mAttachedObjects)
+        {
+            const LLUUID& idItem = pAttachObj->getAttachmentItemID();
+            if ((mAttachmentRequests.wasRequestedRecently(idItem)) || (pAttachObj->isTempAttachment()))
+                continue;
+            AttachmentsInfo attachment;
+            attachment.mItemID = idItem;
+            attachment.mAttachmentPt = kvpAttachPt.first;
+            attachment.mAdd = true;
+            mPendingAttachments.push_back(attachment);
+            mAttachmentRequests.removeTime(idItem);
+            mAttachmentRequests.addTime(idItem);
+        }
+    }
 }

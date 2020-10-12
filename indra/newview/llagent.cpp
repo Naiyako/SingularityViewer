@@ -385,7 +385,6 @@ LLAgent::LLAgent() :
 
 	mAgentAccess(new LLAgentAccess(gSavedSettings)),
 	mGodLevelChangeSignal(),
-	mIsCrossingRegion(false),
 	mCanEditParcel(false),
 	mTeleportSourceSLURL(new LLSLURL),
 	mTeleportRequest(),
@@ -401,6 +400,7 @@ LLAgent::LLAgent() :
 	mLastKnownResponseMaturity(SIM_ACCESS_MIN),
 	mTeleportState( TELEPORT_NONE ),
 	mRegionp(NULL),
+	mIsCrossingRegion(false),
 
 	mAgentOriginGlobal(),
 	mPositionGlobal(),
@@ -4217,6 +4217,38 @@ void LLAgent::handleTeleportFinished()
 		LLNotificationsUtil::add("PreferredMaturityChanged", args);
 		mIsMaturityRatingChangingDuringTeleport = false;
 	}
+	//VertexresetafterTeleport and AutorefreshAttachmentsafterTeleport
+	if (gSavedSettings.getBOOL("VertexresetafterTeleport"))
+	{
+		struct VertexResetTimer : public LLEventTimer
+		{
+			VertexResetTimer() : LLEventTimer(gSavedSettings.getF32("VertexresetafterTeleportTimeset")) {}
+
+			BOOL tick() override
+			{
+				void reset_vertex_buffers(void* user_data);
+				reset_vertex_buffers(nullptr);
+				return true;
+			}
+		};
+		new VertexResetTimer();
+	}
+	if (gSavedSettings.getBOOL("AutorefreshAttachments"))
+	{
+		struct AutorefreshAttachments : public LLEventTimer
+		{
+			AutorefreshAttachments() : LLEventTimer(gSavedSettings.getF32("VertexresetafterTeleportTimeset")) {}
+
+			BOOL tick() override
+			{
+				void handle_refresh_attachments();
+				handle_refresh_attachments();
+				return true;
+			}
+		};
+		new AutorefreshAttachments();
+	}
+	//VertexresetafterTeleport and AutorefreshAttachmentsafterTeleport
 
 	// Init SLM Marketplace connection so we know which UI should be used for the user as a merchant
 	// Note: Eventually, all merchant will be migrated to the new SLM system and there will be no reason to show the old UI at all.
@@ -4527,7 +4559,7 @@ void LLAgent::setTeleportState(ETeleportState state)
 	{
 		case TELEPORT_NONE:
 			mbTeleportKeepsLookAt = false;
-			mIsCrossingRegion = false; // Attachments getting lost on TP; finished TP
+			mIsCrossingRegion = false; //Attachments getting lost on TP; always reset region crossing state after a finished TP
 			break;
 
 		case TELEPORT_MOVING:

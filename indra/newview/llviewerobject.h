@@ -204,6 +204,8 @@ public:
 	virtual BOOL	isTempAttachment() const;
 	virtual void 	updateRadius() {};
 	virtual F32 	getVObjRadius() const; // default implemenation is mDrawable->getRadius()
+	//get the attachmentname
+	const std::string& getAttachmentItemName() const;
 	
 	// for jointed and other parent-relative hacks
 	LLViewerObject* getSubParent();

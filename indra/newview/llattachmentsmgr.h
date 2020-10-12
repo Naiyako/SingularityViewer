@@ -91,6 +91,9 @@ public:
 
     void onDetachRequested(const LLUUID& inv_item_id);
     void onDetachCompleted(const LLUUID& inv_item_id);
+    //MK from KB
+    void refreshAttachments();
+    //mk from kb
 
 // [SL:KB] - Patch: Appearance-SyncAttach | Checked: 2010-09-18 (Catznip-2.1)
 public:

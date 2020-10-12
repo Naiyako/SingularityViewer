@@ -96,6 +96,9 @@
     <menu_item_call enabled="true" label="Reload" mouse_opaque="true" name="Reload Textures">
       <on_click function="Avatar.ReloadTextures" />
     </menu_item_call>
+    <menu_item_call enabled="true" label="Reset Attachments" mouse_opaque="true" name="Reset Attachments">
+      <on_click function="Avatar.ResetAttachments" />
+    </menu_item_call>
     <menu_item_call enabled="true" label="Reset Skel" mouse_opaque="true" name="Reset Skeleton">
       <on_click function="Avatar.ResetSkeleton" />
     </menu_item_call>

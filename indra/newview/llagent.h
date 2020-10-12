@@ -740,10 +740,10 @@ private:
 
 	// Attachments getting lost on TP
 public:
-	void setIsCrossingRegion(bool is_crossing) { mIsCrossingRegion = is_crossing; }
-	bool isCrossingRegion() const { return mIsCrossingRegion; }
+	void			setIsCrossingRegion(bool is_crossing) { mIsCrossingRegion = is_crossing; }
+	bool			isCrossingRegion() const { return mIsCrossingRegion; }
 private:
-	bool mIsCrossingRegion;
+	bool			mIsCrossingRegion;
 
 	// Build
 public:
