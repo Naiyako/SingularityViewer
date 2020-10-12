@@ -3255,6 +3255,10 @@ void process_crossed_region(LLMessageSystem* msg, void**)
 	}
 	LL_INFOS("Messaging") << "process_crossed_region()" << LL_ENDL;
 	gAgentAvatarp->resetRegionCrossingTimer();
+	//calling a Autorefreshment after the simcross
+	void AutorefreshAttachments();
+	AutorefreshAttachments();
+	//calling a Autorefreshment after the simcross
 	gAgent.setIsCrossingRegion(false); //Attachments getting lost on TP, region crossing hook
 
 
@@ -3770,24 +3774,43 @@ void process_kill_object(LLMessageSystem* mesgsys, void** user_data)
 		LLViewerObject* objectp = gObjectList.findObject(id);
 		if (objectp)
 		{
-			if (gAgentAvatarp == objectp->getAvatar())
+			//lostattachmentfix
+			//static LLCachedControl<bool> LostAttachmentsFix(gSavedSettings, "LostAttachmentsFix");
+			//static LLCachedControl<F32> LostAttachmentsFixDelay(gSavedSettings, "LostAttachmentsFixDelay");
+			//bool different_region = mesgsys->getSender().getIPandPort() != gAgent.getRegion()->getHost().getIPandPort(); // alternativ for isCrossingRegion
+			if (gSavedSettings.getBOOL("LostAttachmentsFix"))
 			{
-				if (different_region)
+				void cmdline_printchat(const std::string & message);
+				LLViewerRegion* regionhost = LLWorld::getInstance()->getRegion(mesgsys->getSender());	// for bool different_region
+				bool Delaytimer = gTeleportDelayDelayTimer.getElapsedTimeF32() <= gSavedSettings.getF32("LostAttachmentsFixDelay");
+				bool Attachments = objectp->isAttachment() || objectp->isTempAttachment() && objectp->permYouOwner();
+				//if (LostAttachmentsFix && isAgentAvatarValid() && (gAgent.getTeleportState() != LLAgent::TELEPORT_NONE || Delaytimer || gAgent.isCrossingRegion()) && gAgentAvatarp == objectp->getAvatar()) && attachments)
+				if (isAgentAvatarValid() && (gAgent.getTeleportState() != LLAgent::TELEPORT_NONE || Delaytimer || gAgent.isCrossingRegion()) && gAgentAvatarp && Attachments)
 				{
-					LL_WARNS() << "Region other than our own killing our attachments!!" << LL_ENDL;
-					continue;
-				}
-				else if (gAgent.getTeleportState() != LLAgent::TELEPORT_NONE)
-				{
-					LL_WARNS() << "Region killing our attachments during teleport!!" << LL_ENDL;
-					continue;
-				}
-				else if (gAgent.isCrossingRegion())
-				{
-					LL_WARNS() << "Region killing our attachments during region cross!!" << LL_ENDL;
-					continue;
+					if (gSavedSettings.getBOOL("LostAttachmentsFixReport"))
+					{
+						std::string reason;
+						if (gAgent.getTeleportState() != LLAgent::TELEPORT_NONE)
+						{
+							reason = "teleport";
+							//LL_WARNS() << "Region other than our own killing our attachments!!" << LL_ENDL;
+						}
+						else if (Delaytimer)
+						{
+							reason = "timer";
+							//LL_WARNS() << "Timer is killing our attachments!!" << LL_ENDL;+                                               
+						}
+						else if (gAgent.isCrossingRegion())
+						{
+							reason = "crossing";
+							//LL_WARNS() << "Timer is killing our attachments!!" << LL_ENDL;+                                               }
+						}
+						cmdline_printchat("Region: " + regionhost->getName() + " tryed to kill our attachment: " + objectp->getAttachmentItemName() + " (" + reason + ") - Killmessage received at region: \"" + gAgent.getRegion()->getName() + "\"");
+						continue;
+					}
 				}
 			}
+			//lostattachmentfix
 
 			// Display green bubble on kill
 			if (gShowObjectUpdates)

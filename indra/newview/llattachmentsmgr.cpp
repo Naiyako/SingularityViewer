@@ -644,7 +644,45 @@ void LLAttachmentsMgr::spamStatusInfo()
     }
 #endif
 }
-//to call a refresh
+//VertexresetafterTeleport and AutorefreshAttachmentsafterTeleport
+void AutoVertexReset()
+{
+    if (gSavedSettings.getBOOL("VertexresetafterTeleport"))
+    {
+        struct VertexResetTimer : public LLEventTimer
+        {
+            VertexResetTimer() : LLEventTimer(gSavedSettings.getF32("VertexresetafterTeleportTimeset")) {}
+
+            BOOL tick() override
+            {
+                void reset_vertex_buffers(void* user_data);
+                reset_vertex_buffers(nullptr);
+                return true;
+            }
+        };
+        new VertexResetTimer();
+    }
+}
+void AutorefreshAttachments()
+{
+    if (gSavedSettings.getBOOL("AutorefreshAttachments"))
+    {
+        struct AutorefreshAttachments : public LLEventTimer
+        {
+            AutorefreshAttachments() : LLEventTimer(gSavedSettings.getF32("VertexresetafterTeleportTimeset")) {}
+
+            BOOL tick() override
+            {
+                LLAttachmentsMgr::instance().refreshAttachments();
+                return true;
+            }
+        };
+        new AutorefreshAttachments();
+    }
+}
+//VertexresetafterTeleport and AutorefreshAttachmentsafterTeleport
+
+//to call a direct refresh without adding a new include to other files
 void handle_refresh_attachments()
 {
     LLAttachmentsMgr::instance().refreshAttachments();
