@@ -307,8 +307,6 @@ void LLHoverView::updateText()
 				line.append(LLTrans::getString("TooltipPerson"));
 			}
 			mText.push_back(line);
-
-			mText.push_back(LLTrans::getString("Complexity", LLSD().with("NUM", static_cast<LLSD::Integer>(hit_object->asAvatar()->getVisualComplexity()))));
 		}
 		else
 		{
